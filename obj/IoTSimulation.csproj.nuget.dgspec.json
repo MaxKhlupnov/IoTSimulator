@@ -1,0 +1,88 @@
+{
+  "format": 1,
+  "restore": {
+    "/Users/makhlu/Documents/Projects/IoTSimulator/IoTSimulation.csproj": {}
+  },
+  "projects": {
+    "/Users/makhlu/Documents/Projects/IoTSimulator/IoTSimulation.csproj": {
+      "version": "1.0.0",
+      "restore": {
+        "projectUniqueName": "/Users/makhlu/Documents/Projects/IoTSimulator/IoTSimulation.csproj",
+        "projectName": "IoTSimulation",
+        "projectPath": "/Users/makhlu/Documents/Projects/IoTSimulator/IoTSimulation.csproj",
+        "packagesPath": "/Users/makhlu/.nuget/packages/",
+        "outputPath": "/Users/makhlu/Documents/Projects/IoTSimulator/obj/",
+        "projectStyle": "PackageReference",
+        "configFilePaths": [
+          "/Users/makhlu/.nuget/NuGet/NuGet.Config"
+        ],
+        "originalTargetFrameworks": [
+          "netcoreapp3.1"
+        ],
+        "sources": {
+          "https://api.nuget.org/v3/index.json": {}
+        },
+        "frameworks": {
+          "netcoreapp3.1": {
+            "projectReferences": {}
+          }
+        },
+        "warningProperties": {
+          "warnAsError": [
+            "NU1605"
+          ]
+        }
+      },
+      "frameworks": {
+        "netcoreapp3.1": {
+          "dependencies": {
+            "MQTTnet": {
+              "target": "Package",
+              "version": "[3.0.9, )"
+            },
+            "Microsoft.Extensions.Configuration": {
+              "target": "Package",
+              "version": "[3.1.3, )"
+            },
+            "Microsoft.Extensions.Configuration.FileExtensions": {
+              "target": "Package",
+              "version": "[3.1.3, )"
+            },
+            "Microsoft.Extensions.Configuration.Json": {
+              "target": "Package",
+              "version": "[3.1.3, )"
+            },
+            "Microsoft.Extensions.DependencyInjection": {
+              "target": "Package",
+              "version": "[3.1.3, )"
+            },
+            "Microsoft.Extensions.Logging": {
+              "target": "Package",
+              "version": "[3.1.3, )"
+            },
+            "Microsoft.Extensions.Logging.Console": {
+              "target": "Package",
+              "version": "[3.1.3, )"
+            }
+          },
+          "imports": [
+            "net461",
+            "net462",
+            "net47",
+            "net471",
+            "net472",
+            "net48"
+          ],
+          "assetTargetFallback": true,
+          "warn": true,
+          "frameworkReferences": {
+            "Microsoft.NETCore.App": {
+              "privateAssets": "all"
+            }
+          },
+          "runtimeIdentifierGraphPath": "/usr/local/share/dotnet/sdk/3.1.200/RuntimeIdentifierGraph.json"
+        }
+      }
+    }
+  }
+}

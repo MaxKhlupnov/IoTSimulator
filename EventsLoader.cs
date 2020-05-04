@@ -19,7 +19,7 @@ namespace IoTSimulation {
         private YaIoTClient devClient;
         /** Time interval between device messges in seconds  */
         private int msg_interval; 
-        public bool isStopped {get; set;}
+        public bool isStarted {get; set;}
         
         public EventsLoader(IConfigurationSection config,ILogger Logger){
             
@@ -60,22 +60,27 @@ namespace IoTSimulation {
             try{
 
                     Logger.LogInformation($"Connecting device {device_id}");
-                if (!this.devClient.WaitConnected())
-                {
-                     Logger.LogError($"Device {device_id} connection error");
-                    return;
-                }else{
-                     Logger.LogInformation($"Device {device_id} connected successfully");
-                }
-                    while(!this.isStopped){
+                    
+                    if (!this.Connect()){                       
+                        return;
+                    }
+
+                    while(this.isStarted){
                         for(int i = 0; i < Events.Length; i++){
                         SampleEventModel nextEvent = Events[i];
                             nextEvent.device_id = this.device_id;  // initialize device_id from configuration file and datetime 
                             nextEvent.datetime = DateTime.Now.ToString();
                         string eventData = JsonSerializer.Serialize(nextEvent);
-                        await this.devClient.Publish(topic, eventData, MQTTnet.Protocol.MqttQualityOfServiceLevel.AtLeastOnce);
+                        try{
+                            await this.devClient.Publish(topic, eventData, MQTTnet.Protocol.MqttQualityOfServiceLevel.AtLeastOnce);
+                        }catch(MQTTnet.Exceptions.MqttCommunicationException ex){
+                            Logger.LogInformation($"Connection interrupted for device {device_id}");
+                            if (!this.Connect()){
+                                throw ex;
+                            }
+                        }
                         Logger.LogInformation($"Event {eventData} sucessfully sent");
-                        if (this.isStopped){
+                        if (!this.isStarted){
                             Logger.LogInformation($"Shutting down event generation for device {device_id}");
                             break;
                         }else
@@ -88,7 +93,17 @@ namespace IoTSimulation {
             Logger.LogInformation($"Event generation for device {device_id} stopped");
         }
         
-            
+
+        private bool Connect(){
+            this.isStarted = this.devClient.WaitConnected();
+                if (this.isStarted)
+                {
+                     Logger.LogInformation($"Device {device_id} connected successfully");                                 
+                }else{
+                    Logger.LogError($"Device {device_id} connection error");                   
+                }
+            return this.isStarted; 
+        } 
         
 
          private static SampleEventModel SplitAndFill(string line)

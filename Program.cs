@@ -5,6 +5,8 @@ using Microsoft.Extensions.Configuration.Json;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Console;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace IoTSimulation
 {    
@@ -12,6 +14,7 @@ namespace IoTSimulation
     {
         private static ILogger Logger;
         public static IConfiguration Configuration;
+        private static List<EventsLoader> loadTasks = new  List<EventsLoader>();
              
         static void Main(string[] args)
         {
@@ -31,15 +34,19 @@ namespace IoTSimulation
 
                 IConfigurationSection devicesConfigSection =  Configuration.GetSection("devices");
             
+            
             foreach(IConfigurationSection deviceConfig in devicesConfigSection.GetChildren()){
                     Logger.LogInformation($"Loading data for device {deviceConfig["device_id"]}.");
-                
-                    EventsLoader evnts_loader = new EventsLoader(deviceConfig, Logger);
+                     EventsLoader tmpLoader = new EventsLoader(deviceConfig, Logger);
+                   // loadTasks.Add(tmpLoader);
             }
    
             Console.Read();
+            //shutdown loade thread
+            foreach(EventsLoader loader in loadTasks)
+                loader.isStarted = false;
 
-
+            Task.Delay(1000); //  wait a sec before task shutdown
         };
 
         }
