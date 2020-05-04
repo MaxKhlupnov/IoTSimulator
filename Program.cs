@@ -38,7 +38,7 @@ namespace IoTSimulation
             foreach(IConfigurationSection deviceConfig in devicesConfigSection.GetChildren()){
                     Logger.LogInformation($"Loading data for device {deviceConfig["device_id"]}.");
                      EventsLoader tmpLoader = new EventsLoader(deviceConfig, Logger);
-                   // loadTasks.Add(tmpLoader);
+                    loadTasks.Add(tmpLoader);
             }
    
             Console.Read();
