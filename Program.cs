@@ -40,6 +40,7 @@ namespace IoTSimulation
                      EventsLoader tmpLoader = new EventsLoader(deviceConfig, Logger);
                     loadTasks.Add(tmpLoader);
             }
+            
    
             Console.Read();
             //shutdown loade thread
