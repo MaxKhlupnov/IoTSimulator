@@ -47,7 +47,7 @@ namespace IoTSimulation
     private IMqttClient mqttClient = null;
     private ManualResetEvent oCloseEvent = new ManualResetEvent(false);
     private ManualResetEvent oConnectedEvent = new ManualResetEvent(false);
-
+        private IMqttClientOptions connProps = null;
     public void Start(string certPath)
     {
       X509Certificate certificate = new X509Certificate(certPath);
@@ -81,7 +81,8 @@ namespace IoTSimulation
       mqttClient.UseConnectedHandler(ConnectedHandler);
       mqttClient.UseDisconnectedHandler(DisconnectedHandler);
       Console.WriteLine($"Connecting to mqtt.cloud.yandex.net...");
-      mqttClient.ConnectAsync(options, CancellationToken.None);
+      this.connProps = options;
+      mqttClient.ConnectAsync(this.connProps, CancellationToken.None);
     }
 
     public void Start(string id, string password)
@@ -110,7 +111,7 @@ namespace IoTSimulation
 
       mqttClient.UseApplicationMessageReceivedHandler(DataHandler);
       mqttClient.UseConnectedHandler(ConnectedHandler);
-      mqttClient.UseDisconnectedHandler(DisconnectedHandler);
+      mqttClient.UseDisconnectedHandler(this.DisconnectedHandler);
       Console.WriteLine($"Connecting to mqtt.cloud.yandex.net...");
       mqttClient.ConnectAsync(options, CancellationToken.None);
     }
@@ -147,9 +148,14 @@ namespace IoTSimulation
       return Task.CompletedTask;
     }
 
-    private static Task DisconnectedHandler(MqttClientDisconnectedEventArgs arg)
+    private Task DisconnectedHandler(MqttClientDisconnectedEventArgs arg)
     {
       Console.WriteLine($"Disconnected mqtt.cloud.yandex.net.");
+    if (arg.Exception != null && !string.IsNullOrEmpty(arg.Exception.Message))
+        Console.WriteLine($"Error {arg.Exception.Message}");
+           Thread.Sleep(5000); // Wait 5 sec before next connection attempt
+            Console.WriteLine($"Trying reconnect");
+            this.mqttClient.ConnectAsync(this.connProps, CancellationToken.None);  
       return Task.CompletedTask;
     }
 
