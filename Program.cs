@@ -1,38 +1,42 @@
 ﻿using System;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Configuration.FileExtensions;
+using Microsoft.Extensions.Configuration.Json;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Console;
 
 namespace IoTSimulation
-{
-    
+{    
     class Program
     {
-
-        private static ILogger logger;
-        public static IConfigurationRoot Configuration;
+        private static ILogger Logger;
+        public static IConfiguration Configuration;
+        
+        public static bool isStopped = false;
         static void Main(string[] args)
         {
-
-
         using (var loggerFactory = LoggerFactory.Create(builder => {
                     builder.AddFilter("Microsoft", LogLevel.Warning)
                         .AddFilter("System", LogLevel.Warning)
-                        .AddFilter("IoTSimulation.Program", LogLevel.Debug)
+                        .AddFilter("IoTSimulation", LogLevel.Debug)
                         .AddConsole();
                 }
             )){
 
-        logger = loggerFactory.CreateLogger<Program>();
+        Logger = loggerFactory.CreateLogger<Program>();
 
-      
-       logger.LogInformation("Logging information.");
-            logger.LogCritical("Logging critical information.");
-            logger.LogDebug("Logging debug information.");
-            logger.LogError("Logging error information.");
-            logger.LogTrace("Logging trace");
-            logger.LogWarning("Logging warning.");
+        Configuration = new ConfigurationBuilder()
+          .AddJsonFile("appsettings.json", true, true)
+          .Build();
+
+        IConfigurationSection devicesConfigSection =  Configuration.GetSection("devices");
+    
+       foreach(IConfigurationSection deviceConfig in devicesConfigSection.GetChildren()){
+            Logger.LogInformation($"Loading data for {deviceConfig["device_id"]}.");
+          
+            EventsLoader evnts_loader = new EventsLoader(deviceConfig, Logger);
+       }
    
 
         };
