@@ -12,8 +12,7 @@ namespace IoTSimulation
     {
         private static ILogger Logger;
         public static IConfiguration Configuration;
-        
-        public static bool isStopped = false;
+             
         static void Main(string[] args)
         {
         using (var loggerFactory = LoggerFactory.Create(builder => {
@@ -24,20 +23,22 @@ namespace IoTSimulation
                 }
             )){
 
-        Logger = loggerFactory.CreateLogger<Program>();
+                Logger = loggerFactory.CreateLogger<Program>();
 
-        Configuration = new ConfigurationBuilder()
-          .AddJsonFile("appsettings.json", true, true)
-          .Build();
+                Configuration = new ConfigurationBuilder()
+                .AddJsonFile("appsettings.json", true, true)
+                .Build();
 
-        IConfigurationSection devicesConfigSection =  Configuration.GetSection("devices");
-    
-       foreach(IConfigurationSection deviceConfig in devicesConfigSection.GetChildren()){
-            Logger.LogInformation($"Loading data for {deviceConfig["device_id"]}.");
-          
-            EventsLoader evnts_loader = new EventsLoader(deviceConfig, Logger);
-       }
+                IConfigurationSection devicesConfigSection =  Configuration.GetSection("devices");
+            
+            foreach(IConfigurationSection deviceConfig in devicesConfigSection.GetChildren()){
+                    Logger.LogInformation($"Loading data for device {deviceConfig["device_id"]}.");
+                
+                    EventsLoader evnts_loader = new EventsLoader(deviceConfig, Logger);
+            }
    
+            Console.Read();
+
 
         };
 

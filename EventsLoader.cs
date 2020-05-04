@@ -19,6 +19,7 @@ namespace IoTSimulation {
         private YaIoTClient devClient;
         /** Time interval between device messges in seconds  */
         private int msg_interval; 
+        public bool isStopped {get; set;}
         
         public EventsLoader(IConfigurationSection config,ILogger Logger){
             
@@ -30,11 +31,13 @@ namespace IoTSimulation {
 
             this.topic = YaIoTClient.TopicName(this.device_id, EntityType.Device, TopicType.Events);
             this.devClient = new YaIoTClient();
-            
-            if (config["cert"] != null)
+           
+            if (!string.IsNullOrEmpty(config["cert"]))
+            {
                 this.devClient.Start(config["cert"]);
-            else
+            }else{
                 this.devClient.Start(config["device_id"], config["pwd"]);
+            }
             
 
             var sampleFilePath = Path.Combine(Directory.GetCurrentDirectory(), config["events_file"]);
@@ -55,17 +58,34 @@ namespace IoTSimulation {
         }
         public async void Start(){
             try{
-                Logger.LogInformation($"Connecting device {device_id}");
-                    while(!Program.isStopped){
+
+                    Logger.LogInformation($"Connecting device {device_id}");
+                if (!this.devClient.WaitConnected())
+                {
+                     Logger.LogError($"Device {device_id} connection error");
+                    return;
+                }else{
+                     Logger.LogInformation($"Device {device_id} connected successfully");
+                }
+                    while(!this.isStopped){
                         for(int i = 0; i < Events.Length; i++){
-                        string eventData = JsonSerializer.Serialize(Events[i]);
+                        SampleEventModel nextEvent = Events[i];
+                            nextEvent.device_id = this.device_id;  // initialize device_id from configuration file and datetime 
+                            nextEvent.datetime = DateTime.Now.ToString();
+                        string eventData = JsonSerializer.Serialize(nextEvent);
                         await this.devClient.Publish(topic, eventData, MQTTnet.Protocol.MqttQualityOfServiceLevel.AtLeastOnce);
-                        await Task.Delay(msg_interval * 1000); // in msec
+                        Logger.LogInformation($"Event {eventData} sucessfully sent");
+                        if (this.isStopped){
+                            Logger.LogInformation($"Shutting down event generation for device {device_id}");
+                            break;
+                        }else
+                            await Task.Delay(msg_interval * 1000); // in msec
                         }
                     }
-            }finally{
+            }finally{               
                 this.devClient.Stop();
             }
+            Logger.LogInformation($"Event generation for device {device_id} stopped");
         }
         
             
