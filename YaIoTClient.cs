@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.Security;
+using System.Net;
 using System.Security.Authentication;
 using System.Security.Cryptography.X509Certificates;
 using System.Threading;
@@ -11,6 +12,7 @@ using MQTTnet.Client;
 using MQTTnet.Client.Connecting;
 using MQTTnet.Client.Disconnecting;
 using MQTTnet.Client.Options;
+using System.Security;
 
 namespace IoTSimulation
 {
@@ -48,9 +50,16 @@ namespace IoTSimulation
     private ManualResetEvent oCloseEvent = new ManualResetEvent(false);
     private ManualResetEvent oConnectedEvent = new ManualResetEvent(false);
         private IMqttClientOptions connProps = null;
-    public void Start(string certPath)
+    public void StartCert(string certPath, string certPassword)
     {
-      X509Certificate certificate = new X509Certificate(certPath);
+      X509Certificate certificate;
+      if (string.IsNullOrEmpty(certPassword)){
+       certificate = new X509Certificate(certPath);
+      }else{
+        SecureString secPwd = new NetworkCredential("",certPassword).SecurePassword;        
+        certificate = new X509Certificate(certPath, secPwd);
+      }
+       
       List <X509Certificate> certificates = new List<X509Certificate>();
       certificates.Add(certificate);
 
@@ -79,13 +88,13 @@ namespace IoTSimulation
 
       mqttClient.UseApplicationMessageReceivedHandler(DataHandler);
       mqttClient.UseConnectedHandler(ConnectedHandler);
-      mqttClient.UseDisconnectedHandler(DisconnectedHandler);
+      mqttClient.UseDisconnectedHandler(this.DisconnectedHandler);
       Console.WriteLine($"Connecting to mqtt.cloud.yandex.net...");
       this.connProps = options;
       mqttClient.ConnectAsync(this.connProps, CancellationToken.None);
     }
 
-    public void Start(string id, string password)
+    public void StartPwd(string id, string password)
     {
       //setup connection options
       MqttClientOptionsBuilderTlsParameters tlsOptions = new MqttClientOptionsBuilderTlsParameters
@@ -111,6 +120,7 @@ namespace IoTSimulation
 
       mqttClient.UseApplicationMessageReceivedHandler(DataHandler);
       mqttClient.UseConnectedHandler(ConnectedHandler);
+      this.connProps = options;
       mqttClient.UseDisconnectedHandler(this.DisconnectedHandler);
       Console.WriteLine($"Connecting to mqtt.cloud.yandex.net...");
       mqttClient.ConnectAsync(options, CancellationToken.None);

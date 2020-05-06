@@ -37,11 +37,11 @@ namespace IoTSimulation
 
             if (!string.IsNullOrEmpty(config["cert"]))
             {
-                this.devClient.Start(config["cert"]);
+                this.devClient.StartCert(config["cert"], config["pwd"]);
             }
             else
             {
-                this.devClient.Start(config["device_id"], config["pwd"]);
+                this.devClient.StartPwd(config["device_id"], config["pwd"]);
             }
 
 
