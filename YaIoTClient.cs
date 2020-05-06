@@ -79,6 +79,7 @@ namespace IoTSimulation
           .WithTcpServer(MqttServer, MqttPort)
           .WithTls(tlsOptions)
           .WithCleanSession()
+          .WithCommunicationTimeout(TimeSpan.FromSeconds(90))
           .WithKeepAlivePeriod(TimeSpan.FromSeconds(90))
           .WithKeepAliveSendInterval(TimeSpan.FromSeconds(60))
           .Build();
