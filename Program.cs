@@ -6,6 +6,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Console;
 using System.Collections.Generic;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace IoTSimulation
@@ -14,6 +15,7 @@ namespace IoTSimulation
     {
         private static ILogger Logger;
         public static IConfiguration Configuration;
+        private static CancellationTokenSource cancelTokenSource = new CancellationTokenSource();
         private static List<EventsLoader> loadTasks = new List<EventsLoader>();
 
         static void Main(string[] args)
@@ -39,25 +41,20 @@ namespace IoTSimulation
                 foreach (IConfigurationSection deviceConfig in devicesConfigSection.GetChildren())
                 {
                     Logger.LogInformation($"Loading data for device {deviceConfig["device_id"]}.");
-                    EventsLoader tmpLoader = new EventsLoader(deviceConfig, Logger);
+                    EventsLoader tmpLoader = new EventsLoader(deviceConfig, Logger, Program.cancelTokenSource.Token);
                     loadTasks.Add(tmpLoader);
                 }
 
                 Logger.LogInformation("Loader started. Press any key to exit");
-                Console.Read();
+                Console.ReadLine();
                 
-                
-                //shutdown generation thread
-                foreach (EventsLoader loader in loadTasks)
-                {
-                    if (loader.isStarted)
-                    {
-                        loader.isStarted = false;
-                        Task.Delay(1000); //  wait a sec before task shutdown                            
-                    }
-                }
+                //shutting down generation thread
+                Program.cancelTokenSource.Cancel();
+                   Task.Delay(5000); //  wait a sec before task shutdown    
 
-
+                for (int i=0; i< loadTasks.Count; i++)  
+                    if (loadTasks[i].isStarted)   
+                        i = 0; // start again untill all thrads not stopped               
                 
             };
 

@@ -21,13 +21,16 @@ namespace IoTSimulation
         private YaIoTClient devClient;
         /** Time interval between device messges in seconds  */
         private int msg_interval;
-        public bool isStarted { get; set; }
+        public bool isStarted {get; private set;}
+        private  CancellationToken cancelToken;
+      
 
-        public EventsLoader(IConfigurationSection config, ILogger Logger)
+        public EventsLoader(IConfigurationSection config, ILogger Logger, CancellationToken cancelToken)
         {
 
             this.Logger = Logger;
             this.device_id = config["device_id"];
+            this.cancelToken = cancelToken;
 
             if (!int.TryParse(config["msg_interval"], out this.msg_interval))
                 msg_interval = 10; // if interval is not specified - default is 10 sec.
@@ -74,7 +77,7 @@ namespace IoTSimulation
                     return;
                 }
 
-                while (this.isStarted)
+                while (!this.cancelToken.IsCancellationRequested)
                 {
                     for (int i = 0; i < Events.Length; i++)
                     {
@@ -95,7 +98,7 @@ namespace IoTSimulation
                             }
                         }
                         Logger.LogInformation($"Event {eventData} sucessfully sent");
-                        if (!this.isStarted)
+                        if (this.cancelToken.IsCancellationRequested)
                         {
                             Logger.LogInformation($"Shutting down event generation for device {device_id}");
                             break;
@@ -108,6 +111,7 @@ namespace IoTSimulation
             finally
             {
                 this.devClient.Stop();
+                this.isStarted = false;
             }
             Logger.LogInformation($"Event generation for device {device_id} stopped");
         }
