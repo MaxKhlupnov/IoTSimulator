@@ -1,13 +1,11 @@
 # IoTSimulator
-Sample IoT simulation app for Yandex IoT Core
 Консольное приложение, котрое эмулирует одно или несколько IoT устройств и отправляет в топик MQTT 
 <a href="https://cloud.yandex.ru/docs/iot-core/">сервиса IoT Core</a>  JSON-сообщения.
 
 Приложение написано на .NET Core, работа тестировалась на Windows, Mac и Ubuntu.
 <P>Видео с описанием порядка настройки и запуска приложения см. <a href="https://youtu.be/xPsf3muVTTs">здесь</a></P>
 
-Для дальнейшей обработки данных на стороне облака рекомендуется ознакомиться с примером 
-<a href="https://github.com/MaxKhlupnov/IoTCoreAdapter">IoTAdapter</a>
+Для развертывания инфраструктуры на стороне облака для приема, обработки и хранения данных воспользоваться шаблонами Terraform из примера <a href="https://github.com/MaxKhlupnov/IoTCoreAdapter">IoTAdapter</a>
 
 Для работы примера нужно:
 <ol>
