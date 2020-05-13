@@ -1,6 +1,8 @@
 # IoTSimulator
 Консольное приложение, котрое эмулирует одно или несколько IoT устройств и отправляет в топик MQTT 
-<a href="https://cloud.yandex.ru/docs/iot-core/">сервиса IoT Core</a>  JSON-сообщения.
+<a href="https://cloud.yandex.ru/docs/iot-core/">сервиса IoT Core</a> JSON-сообщения эмулирующие телеметрию автомобиля и 
+имеющие следующий формат:
+<pre>{'device_id':'areb120kpg2j1kqiq23d','datetime':'05/07/2020 13:09:47','latitude':'55.70329032','longitude':'37.65472196','altitude':'429.13','speed':'0','battery_voltage':'23,5','cabin_temperature':'17','fuel_level':null}</pre>
 
 Приложение написано на .NET Core, работа тестировалась на Windows, Mac и Ubuntu.
 <P>Видео с описанием порядка настройки и запуска приложения см. <a href="https://youtu.be/xPsf3muVTTs">здесь</a></P>
