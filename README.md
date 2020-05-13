@@ -4,7 +4,7 @@ Sample IoT simulation app for Yandex IoT Core
 <a href="https://cloud.yandex.ru/docs/iot-core/">сервиса IoT Core</a>  JSON-сообщения.
 
 Приложение написано на .NET Core, работа тестировалась на Windows, Mac и Ubuntu.
-Видео с описанием порядка настройки и запуска приложения см. <a href="https://youtu.be/xPsf3muVTTs">здесь</a>
+<P>Видео с описанием порядка настройки и запуска приложения см. <a href="https://youtu.be/xPsf3muVTTs">здесь</a></P>
 
 Для дальнейшей обработки данных на стороне облака рекомендуется ознакомиться с примером 
 <a href="https://github.com/MaxKhlupnov/IoTCoreAdapter">IoTAdapter</a>
