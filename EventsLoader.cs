@@ -139,7 +139,7 @@ namespace IoTSimulation
             var props = typeof(SampleEventModel).GetProperties();
 
             var values = line.Split(";");
-            for (var i = 0; i < values.Length - 1; i++)
+            for (var i = 0; i < values.Length; i++)
             {
                 props[i].SetValue(sampleAlert, values[i]);
             }
